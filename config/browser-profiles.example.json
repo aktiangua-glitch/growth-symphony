@@ -1,0 +1,10 @@
+{
+  "default_profile": "xhs-main",
+  "profiles": {
+    "xhs-main": {
+      "provider": "adspower",
+      "profile_id": "replace-with-adspower-profile-id"
+    }
+  }
+}
+

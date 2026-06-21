@@ -1,0 +1,4 @@
+interface:
+  display_name: "小红书关键词矩阵"
+  short_description: "批量采集多个小红书关键词搜索样本并输出结构化矩阵分析证据"
+  default_prompt: "比较这些小红书关键词机会"

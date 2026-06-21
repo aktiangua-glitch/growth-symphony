@@ -1,0 +1,4 @@
+interface:
+  display_name: "小红书策略分析"
+  short_description: "基于采集证据生成小红书选题策略"
+  default_prompt: "Use $strategy-analysis to analyze a Xiaohongshu agent_input.json and produce evidence-based content strategy."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "飞书 Skill"
+  short_description: "使用飞书 CLI 导入运营分析结果到多维表"
+  default_prompt: "将这个 feishu_rows.json 导入飞书多维表"

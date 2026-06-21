@@ -1,0 +1,4 @@
+interface:
+  display_name: "小红书账号体检"
+  short_description: "采集小红书账号主页和近期笔记并输出结构化分析证据给策略判断"
+  default_prompt: "分析这个小红书账号主页"

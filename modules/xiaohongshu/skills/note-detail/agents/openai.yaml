@@ -1,0 +1,4 @@
+interface:
+  display_name: "小红书笔记深挖"
+  short_description: "分析单条小红书笔记并输出固定结构结果"
+  default_prompt: "分析这条小红书笔记 URL"

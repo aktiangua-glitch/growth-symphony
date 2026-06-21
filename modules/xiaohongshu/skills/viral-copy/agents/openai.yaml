@@ -1,0 +1,4 @@
+interface:
+  display_name: "小红书笔记复刻"
+  short_description: "基于笔记证据生成结构级复刻方案"
+  default_prompt: "复刻这条小红书笔记的结构，输出新标题、正文大纲、封面文案和互动问题"

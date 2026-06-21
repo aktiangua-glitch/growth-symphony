@@ -1,0 +1,8 @@
+.DS_Store
+node_modules/
+.playwright-cli/
+runs/
+config/browser-profiles.json
+__pycache__/
+.venv/
+upstreams/

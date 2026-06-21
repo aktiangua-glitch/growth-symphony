@@ -1,0 +1,25 @@
+{
+  "name": "growth-symphony",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "ads": "ads",
+    "pw": "playwright-cli",
+    "xhs:search-hot": "python3 modules/xiaohongshu/skills/search-hot/scripts/search_hot.py",
+    "xhs:note-detail": "python3 modules/xiaohongshu/skills/note-detail/scripts/note_detail.py",
+    "xhs:home-feed": "python3 modules/xiaohongshu/skills/home-feed/scripts/home_feed.py",
+    "xhs:account-scan": "python3 modules/xiaohongshu/skills/account-scan/scripts/account_scan.py",
+    "xhs:keyword-matrix": "python3 modules/xiaohongshu/skills/keyword-matrix/scripts/keyword_matrix.py",
+    "xhs:viral-copy-context": "python3 modules/xiaohongshu/skills/viral-copy/scripts/build_viral_copy_context.py",
+    "xhs:html-report": "python3 modules/xiaohongshu/skills/strategy-analysis/scripts/build_html_report.py",
+    "browser-env": "python3 scripts/browser_env.py",
+    "feishu:bitable-payload": "python3 modules/feishu/skills/feishu-skill/scripts/feishu_bitable.py",
+    "validate:skills": "python3 /Users/admin/.codex/skills/.system/skill-creator/scripts/quick_validate.py modules/xiaohongshu/skills/search-hot && python3 /Users/admin/.codex/skills/.system/skill-creator/scripts/quick_validate.py modules/xiaohongshu/skills/note-detail && python3 /Users/admin/.codex/skills/.system/skill-creator/scripts/quick_validate.py modules/xiaohongshu/skills/home-feed && python3 /Users/admin/.codex/skills/.system/skill-creator/scripts/quick_validate.py modules/xiaohongshu/skills/account-scan && python3 /Users/admin/.codex/skills/.system/skill-creator/scripts/quick_validate.py modules/xiaohongshu/skills/keyword-matrix && python3 /Users/admin/.codex/skills/.system/skill-creator/scripts/quick_validate.py modules/xiaohongshu/skills/viral-copy && python3 /Users/admin/.codex/skills/.system/skill-creator/scripts/quick_validate.py modules/xiaohongshu/skills/strategy-analysis && python3 /Users/admin/.codex/skills/.system/skill-creator/scripts/quick_validate.py modules/feishu/skills/feishu-skill"
+  },
+  "devDependencies": {
+    "@playwright/cli": "^0.1.14",
+    "adspower-browser": "^2.0.6",
+    "playwright": "^1.56.0"
+  }
+}
