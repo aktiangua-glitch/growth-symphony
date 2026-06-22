@@ -256,6 +256,7 @@ def build_agent_input(samples):
                 "hook_analysis": card.get("hook_analysis", {}),
                 "content_form": card.get("content_form", ""),
                 "visible_text": card.get("visible_text", ""),
+                "image": card.get("image", ""),
             }
             for card in samples["cards"]
         ],
@@ -277,6 +278,7 @@ def compact_detail(detail, index):
     return {
         "rank": index,
         "source_title": detail.get("source_card", {}).get("title", ""),
+        "source_card": compact_source_card(detail.get("source_card", {})),
         "title": detail.get("title", ""),
         "url": detail.get("url", ""),
         "author": detail.get("author", {}),
@@ -288,10 +290,21 @@ def compact_detail(detail, index):
         "content_structure": detail.get("content_structure", {}),
         "comment_patterns": detail.get("comment_patterns", {}),
         "content_form": detail.get("content_form", ""),
+        "media_refs": detail.get("media_refs", []),
         "access_status": detail.get("access_status", ""),
         "tags": detail.get("tags", []),
         "body_excerpt": detail.get("body_excerpt", "")[:900],
         "comments": (detail.get("comments") or [])[:8],
+    }
+
+
+def compact_source_card(card):
+    return {
+        "title": card.get("title", ""),
+        "url": card.get("url", ""),
+        "image": card.get("image", ""),
+        "visible_text": card.get("visible_text", ""),
+        "content_form": card.get("content_form", ""),
     }
 
 

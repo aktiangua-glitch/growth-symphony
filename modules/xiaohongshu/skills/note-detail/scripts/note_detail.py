@@ -120,6 +120,7 @@ def build_agent_input(detail):
         "content_structure": detail.get("content_structure", {}),
         "comment_patterns": detail.get("comment_patterns", {}),
         "content_form": detail.get("content_form", ""),
+        "media_refs": detail.get("media_refs", []),
         "tags": detail.get("tags", []),
         "body_excerpt": detail.get("body_excerpt", "")[:1200],
         "comments": (detail.get("comments") or [])[:12],

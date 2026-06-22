@@ -137,6 +137,30 @@ def first_image_url(root, base_url):
     return None
 
 
+def media_refs(page, limit=12):
+    refs = []
+    for image in page.locator("img").all()[:limit]:
+        src = safe_attr(image, "src")
+        if src:
+            refs.append({"type": "image", "url": urljoin(page.url, src), "role": "visible_image"})
+    for video in page.locator("video").all()[:4]:
+        src = safe_attr(video, "src") or safe_attr(video, "currentSrc")
+        if src:
+            refs.append({"type": "video", "url": urljoin(page.url, src), "role": "visible_video"})
+        poster = safe_attr(video, "poster")
+        if poster:
+            refs.append({"type": "image", "url": urljoin(page.url, poster), "role": "video_poster"})
+    seen = set()
+    unique_refs = []
+    for ref in refs:
+        marker = (ref.get("type"), ref.get("url"))
+        if marker in seen:
+            continue
+        seen.add(marker)
+        unique_refs.append(ref)
+    return unique_refs[:limit]
+
+
 def extract_note_cards(page, limit):
     cards = []
     seen = set()
@@ -220,6 +244,7 @@ def extract_note_detail(page, source_card=None, comment_limit=10, tag_limit=16, 
         "content_form": xs.infer_content_form(visible_text, page.url),
         "page_text_excerpt": page_text[:page_text_limit],
         "author": extract_author(page, body),
+        "media_refs": media_refs(page),
     }
     if source_card:
         detail["source_card"] = source_card

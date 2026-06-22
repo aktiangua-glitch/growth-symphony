@@ -2,6 +2,7 @@
 node_modules/
 .playwright-cli/
 runs/
+garden-gpt-image-2/
 config/browser-profiles.json
 __pycache__/
 .venv/

@@ -65,6 +65,7 @@ def build_context(data, source, input_path, topic, target_user):
     body = clean_body_excerpt(source.get("body_excerpt", ""), source.get("title") or source.get("source_title", ""))
     question_examples = (source.get("comment_patterns") or {}).get("question_examples") or []
     comments = unique_compact_comments([*question_examples, *(source.get("comments") or [])], limit=8)
+    media_refs = media_references(source)
     evidence_limits = []
     if not body:
         evidence_limits.append("正文不可见或未采集到正文。")
@@ -72,6 +73,8 @@ def build_context(data, source, input_path, topic, target_user):
         evidence_limits.append("评论不可见或未采集到评论。")
     if not source.get("metrics_hint"):
         evidence_limits.append("互动指标不可见。")
+    if not media_refs:
+        evidence_limits.append("未采集到可用原图、视频或截图引用；视觉复刻需要用户补原图/截图或重新采集。")
 
     return {
         "schema_version": "xhs.viral_copy_context.v1",
@@ -97,10 +100,19 @@ def build_context(data, source, input_path, topic, target_user):
             "body_excerpt": body,
             "comment_examples": comments,
         },
+        "visual_evidence": {
+            "content_form": source.get("content_form", ""),
+            "media_refs": media_refs,
+            "source_visual_notes": [
+                "只把原图/关键帧作为构图、色块、信息层级参考。",
+                "最终图片或图纸必须原创，不复用原图。"
+            ],
+        },
         "llm_task": [
             "拆源笔记结构，不复用原文措辞。",
+            "拆源图像结构，不复用原图。",
             "提炼可复刻结构和必须替换部分。",
-            "围绕 topic 和 target_user 生成新笔记方案。",
+            "围绕 topic 和 target_user 生成新笔记方案、视觉方案和互动方案。",
             "输出必须符合 viral_copy_template.json。",
         ],
         "evidence_limits": evidence_limits,
@@ -132,9 +144,28 @@ def build_template(context):
             "interaction_question": "",
             "topics": [],
         },
+        "visual_plan": {
+            "reference_handling": "说明如何使用原图/截图/关键帧作为参考，以及哪些元素必须替换。",
+            "target_visual_type": "例如：拼豆图纸、成品展示图、教程步骤图、视频关键帧组图。",
+            "image_prompts": [
+                {
+                    "name": "",
+                    "prompt": "",
+                    "notes": "用于 gpt-image-2 或宿主图像工具。"
+                }
+            ],
+            "pattern_sheet": {
+                "canvas_ratio": "",
+                "grid_size": "",
+                "palette": [],
+                "layout_notes": "",
+                "text_overlay": "",
+            },
+            "video_keyframes": [],
+        },
         "risks": [
             "不要逐字照抄原文。",
-            "不要复用原图或原作者经历。",
+            "不要复用原图、视频原帧或原作者经历。",
         ],
         "evidence_limits": context.get("evidence_limits", []),
     }
@@ -159,14 +190,59 @@ def render_summary(context, template_path):
 
 {comment_lines}
 
+## 视觉证据
+
+{visual_lines(context)}
+
 ## 证据限制
 
 {limits}
 
 ## Agent 下一步
 
-读取 `viral_copy_context.json`，按 `viral_copy_template.json` 输出结构级复刻方案。
+读取 `viral_copy_context.json`，按 `viral_copy_template.json` 输出文案结构、视觉复刻和互动方案。若用户要图纸，优先输出拼豆图纸 prompt 和色块说明。
 """
+
+
+def media_references(source):
+    refs = []
+    image = source.get("image")
+    if image:
+        refs.append({"type": "image", "url": image, "role": "source_card_cover"})
+    source_card = source.get("source_card") or {}
+    if source_card.get("image"):
+        refs.append({"type": "image", "url": source_card["image"], "role": "source_card_cover"})
+    for item in source.get("media_refs") or []:
+        if item.get("url"):
+            refs.append({
+                "type": item.get("type", "media"),
+                "url": item.get("url", ""),
+                "role": item.get("role", "media_ref"),
+            })
+    for key in ("screenshot", "screenshot_path", "video", "video_url"):
+        value = source.get(key)
+        if value:
+            media_type = "video" if "video" in key else "screenshot"
+            refs.append({"type": media_type, "url": value, "role": key})
+    seen = set()
+    unique_refs = []
+    for ref in refs:
+        marker = (ref.get("type"), ref.get("url"))
+        if marker in seen:
+            continue
+        seen.add(marker)
+        unique_refs.append(ref)
+    return unique_refs
+
+
+def visual_lines(context):
+    refs = context.get("visual_evidence", {}).get("media_refs") or []
+    if not refs:
+        return "- 未采集到可用原图/视频引用。"
+    return "\n".join(
+        f"- {item.get('type', '')}｜{item.get('role', '')}：{item.get('url', '')}"
+        for item in refs
+    )
 
 
 def compact_text(value, limit):
