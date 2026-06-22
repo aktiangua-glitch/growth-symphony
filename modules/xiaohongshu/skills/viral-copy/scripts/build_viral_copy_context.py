@@ -167,7 +167,16 @@ def build_template(context):
                 {
                     "name": "",
                     "prompt": "",
-                    "notes": "用于 gpt-image-2 或宿主图像工具。"
+                    "notes": "用于 gpt-image-2 实际出图，并作为随附记录保存。"
+                }
+            ],
+            "generated_assets": [
+                {
+                    "type": "image_or_pattern_sheet",
+                    "mode": "Mode A 本地落盘 / Mode B 宿主出图 / Mode C 无法出图",
+                    "path_or_url": "",
+                    "prompt_path": "",
+                    "notes": "有图像能力时必须写实际图片路径或链接；只有 Mode C 才写无法出图原因。"
                 }
             ],
             "pattern_sheet": {

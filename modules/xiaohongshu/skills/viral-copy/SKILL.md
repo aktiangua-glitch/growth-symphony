@@ -39,7 +39,7 @@ npm run xhs:viral-copy-context -- --input /path/to/agent_input.json --topic "蜜
 
 - `note-detail` / `search-hot`：采集浏览器可见事实。
 - `viral-copy`：压缩证据、固定输出结构、约束复刻边界。
-- agent/LLM：基于 `viral_copy_context.json` 输出新笔记方案、视觉生成方案和评论互动方案。
+- agent/LLM：基于 `viral_copy_context.json` 输出新笔记方案、直接生成原创图片/图纸、补充视觉方案和评论互动方案。
 
 ## 视觉复刻流程
 
@@ -47,7 +47,8 @@ npm run xhs:viral-copy-context -- --input /path/to/agent_input.json --topic "蜜
 - 拼豆类笔记：如果用户说“图纸”，输出应偏向可收藏的拼豆图纸/像素格稿，而不是单纯成品照片。图纸需包含主体轮廓、色块分区、真实色号和可选封面文案。
 - 拼豆真实色卡：默认使用 `https://拼豆.cn/palettes.json`，优先品牌 `MARD`。生成图纸时只能使用 `bead_palette_reference.selected_colors` 或 `palette_reference.json` 里存在的 `code/name/hex`，不要编造“浅粉/奶油黄”等无法购买的颜色。需要更多颜色时回查 `palette_reference.json` 全量色卡。
 - 视频笔记：如果可合法访问视频素材，先截取 3-5 个关键帧作为镜头参考；输出关键帧说明和相似图生成提示词，并标注“参考帧，不可直接搬运”。没有视频文件或无法访问时，写入 `evidence_limits`。
-- 使用图像生成时，优先按 `gpt-image-2` skill 写结构化 prompt；prompt 必须声明“色块来自真实拼豆色卡”，并列出所用色号。不要让图像模型自由生成渐变色、金属光、半透明珠子或真实色卡不存在的颜色。有宿主图像工具时交给宿主出图，没有工具时至少保存/返回可直接出图的 prompt。
+- 使用图像生成时，默认必须用 `gpt-image-2` 完成出图闭环。先按 `gpt-image-2` skill 检测模式：Mode A 直接调用本地脚本落盘；Mode B 调用宿主图像工具出图；只有 Mode C 才能退化为 prompt 顾问。prompt 必须声明“色块来自真实拼豆色卡”，并列出所用色号。不要让图像模型自由生成渐变色、金属光、半透明珠子或真实色卡不存在的颜色。
+- `image_prompts` 只是出图过程记录，不能作为有图像能力时的最终交付。最终交付必须在 `generated_assets` 写入图片路径、链接或明确的无法出图原因。
 
 ## 输出要求
 
@@ -82,6 +83,7 @@ LLM 必须输出 `xhs.viral_copy.v1` JSON：
     "reference_handling": "",
     "target_visual_type": "",
     "image_prompts": [],
+    "generated_assets": [],
     "pattern_sheet": {
       "canvas_ratio": "",
       "grid_size": "",
@@ -103,9 +105,9 @@ LLM 必须输出 `xhs.viral_copy.v1` JSON：
 
 - 只做结构级复刻，不逐字照抄。
 - 不复用原图、原作者经历、隐私信息、评论原话。
-- 视觉复刻必须生成“原创相似图/图纸方案”，不能只给封面文案。
+- 视觉复刻必须生成“原创相似图/图纸图片”，不能只给封面文案或图片生成提示词。
 - 参考原图只能用于构图、色块、镜头、信息层级分析；最终图像必须换主题、换主体细节或换色系。
-- 如果用户要求“图纸”，优先输出拼豆图纸生成 prompt、真实色号、色块建议和图纸备注。
+- 如果用户要求“图纸”，优先直接生成拼豆图纸图片，并输出真实色号、色块建议和图纸备注；prompt 只作为随附记录。
 - 拼豆图纸的 `pattern_sheet.palette` 必须逐项写 `code/name/hex/usage`，且每个色号必须能在 `bead_palette_reference` 或 `palette_reference.json` 查到。
 - 如果源内容是视频，必须给关键帧提取/参考说明；能截帧就列出关键帧，不能截帧就说明限制。
 - 新标题必须换人群、场景、结果或限制条件。
