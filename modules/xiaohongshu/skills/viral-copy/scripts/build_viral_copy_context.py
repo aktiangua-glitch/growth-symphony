@@ -94,7 +94,11 @@ def build_context(data, source, input_path, topic, target_user, palette_referenc
         "输出必须符合 viral_copy_template.json。",
     ]
     if is_bead_task:
-        llm_task.append("如果生成拼豆图纸，必须从 bead_palette_reference 的真实色号中选色，不能写不存在的颜色。")
+        llm_task.extend([
+            "拼豆复刻必须生成三段资产：gpt-image-2 展示源图、pindou-pattern 真实色卡稿纸、参考稿纸颜色的成品效果图。",
+            "拼豆稿纸色号和颗数以 pindou-pattern 输出为准，不能写不存在的颜色。",
+            "公开晒图优先使用展示源图和成品效果图；稿纸作为粉丝索取时的承接资产。",
+        ])
 
     return {
         "schema_version": "xhs.viral_copy_context.v1",
@@ -162,23 +166,50 @@ def build_template(context):
         },
         "visual_plan": {
             "reference_handling": "说明如何使用原图/截图/关键帧作为参考，以及哪些元素必须替换。",
-            "target_visual_type": "例如：拼豆图纸、成品展示图、教程步骤图、视频关键帧组图。",
+            "target_visual_type": "例如：拼豆三段闭环、成品展示图、教程步骤图、视频关键帧组图。",
             "image_prompts": [
                 {
-                    "name": "",
+                    "name": "展示源图 / 成品效果图",
                     "prompt": "",
-                    "notes": "用于 gpt-image-2 实际出图，并作为随附记录保存。"
+                    "notes": "用于 gpt-image-2 实际出图，并作为随附记录保存；拼豆稿纸由 pindou-pattern 生成。"
                 }
             ],
             "generated_assets": [
                 {
-                    "type": "image_or_pattern_sheet",
+                    "type": "display_source_image",
                     "mode": "Mode A 本地落盘 / Mode B 宿主出图 / Mode C 无法出图",
                     "path_or_url": "",
                     "prompt_path": "",
-                    "notes": "有图像能力时必须写实际图片路径或链接；只有 Mode C 才写无法出图原因。"
+                    "notes": "第 1 张：gpt-image-2 生成的展示源图，必须适合转拼豆稿纸。"
+                },
+                {
+                    "type": "pindou_pattern_sheet",
+                    "mode": "pindou-pattern",
+                    "path_or_url": "",
+                    "prompt_path": "",
+                    "notes": "第 2 张：pindou-pattern 生成的真实色卡稿纸 PNG。"
+                },
+                {
+                    "type": "finished_result_image",
+                    "mode": "Mode A 本地落盘 / Mode B 宿主出图 / Mode C 无法出图",
+                    "path_or_url": "",
+                    "prompt_path": "",
+                    "notes": "第 3 张：参考稿纸颜色和格子结构生成的成品效果图。"
                 }
             ],
+            "pindou_pattern": {
+                "source_image": "第 1 张展示源图路径或链接。",
+                "pattern_png": "第 2 张真实色卡稿纸 PNG 路径或链接。",
+                "preview_png": "pindou-pattern 输出的拼豆预览图路径或链接。",
+                "brand": context.get("bead_palette_reference", {}).get("brand", ""),
+                "width": "",
+                "height": "",
+                "total_beads": "",
+                "color_count": "",
+                "counts": [],
+                "matrix_path": "",
+                "notes": "稿纸用于粉丝要图纸时发放；小红书公开晒图优先用第 1 张和第 3 张。"
+            },
             "pattern_sheet": {
                 "canvas_ratio": "",
                 "grid_size": "",
@@ -294,7 +325,8 @@ def build_palette_reference(args, out_dir, topic):
         "usage_rules": [
             "拼豆图纸只能使用 selected_colors 或 local_cache_path 中存在的真实 code/name/hex。",
             "pattern_sheet.palette 必须写 code、name、hex、usage；不要只写“浅粉/奶油黄”这类抽象色。",
-            "gpt-image-2 prompt 里要明确色块来自真实拼豆色卡，并要求生成可按格子复刻的像素图纸。",
+            "gpt-image-2 先生成适合转稿纸的展示源图；真实稿纸由 pindou-pattern 输出。",
+            "成品效果图必须参考 pindou-pattern 稿纸的主色、格子结构和色块比例。",
             "如果需要更多颜色，读取 local_cache_path 的全量色卡，不要临时编色号。",
         ],
     }

@@ -1,4 +1,4 @@
 interface:
   display_name: "小红书笔记复刻"
-  short_description: "基于笔记证据生成文案、真实色卡图纸和原创复刻图"
-  default_prompt: "复刻这条小红书笔记，输出新标题、正文大纲、封面文案，直接生成真实色卡图纸/原创图片，并给互动问题"
+  short_description: "基于笔记证据生成文案、拼豆稿纸和成品晒图"
+  default_prompt: "复刻这条小红书笔记，输出新标题、正文大纲、封面文案，并生成展示源图、pindou-pattern 真实色卡稿纸和成品效果图"

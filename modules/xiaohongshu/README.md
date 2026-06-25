@@ -10,6 +10,7 @@
 - `home-feed`：采集首页推荐流样本。
 - `account-scan`：采集账号主页和近期笔记样本。
 - `viral-copy`：基于采集证据生成结构级复刻上下文。
+- `pindou-pattern`：把原创源图转成真实色卡拼豆稿纸 PNG，用于粉丝索取图纸承接。
 - `strategy-analysis`：基于 `agent_input.json` 做策略分析、选题判断和飞书字段补全。
 
 运行链路：
@@ -19,6 +20,7 @@ agent 选择浏览器环境
   -> browser-env 使用 ads CLI 取得 ws.puppeteer
   -> search-hot / keyword-matrix / note-detail / home-feed / account-scan 采集证据
   -> viral-copy 按需生成复刻上下文
+  -> pindou-pattern 按需生成真实色卡拼豆稿纸
   -> strategy-analysis 生成策略判断
   -> feishu-skill 写入多维表
 ```
